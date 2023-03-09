@@ -1,6 +1,6 @@
-// const { defineConfig } = require("@vue/cli-service");
-const path = require("path");
-const ElementPlus = require("unplugin-element-plus/webpack").default;
+const { defineConfig } = require("@vue/cli-service");
+// const path = require("path");
+const ElementPlus = require('unplugin-element-plus/webpack');
 // const AutoImport = require('unplugin-auto-import/webpack');
 // const Components = require('unplugin-vue-components/webpack');
 // const { ElementPlusResolver } = require('unplugin-vue-components/resolvers');
@@ -20,7 +20,7 @@ module.exports = defineConfig({
      * webpack配置,see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
      **/
     chainWebpack: (config) => {},
-    configureWebpack: (config) => {},
+    // configureWebpack: (config) => {},
     // 生产环境是否生成 sourceMap 文件
     productionSourceMap: false,
     //css
