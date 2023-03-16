@@ -5,24 +5,24 @@
                 <!-- :class == v-bind -->
                 <!-- @click="current_menu=item.type"   登录注册切换--> 
                     <li @click="toggleMenu(item.type)" :class="{'current':current_menu===item.type}" v-for="item in tab_menu" :key="item.type">{{ item.label }}</li>
-                    <el-form ref="from">
-                        <el-form-item>
-                            <label class="from-label">用户名</label>
-                            <el-input v-model.trim="username"/>
+                    <el-form ref="from" :model="form" :rules="form_rules">
+                        <el-form-item prop="username">
+                            <label class="from-label">邮箱</label>
+                            <el-input v-model.trim="form.username"/>
                         </el-form-item>
-                        <el-form-item>
+                        <el-form-item prop="password">
                             <label class="from-label">密码</label>
-                            <el-input type="password" v-model.trim="password"/>
+                            <el-input type="password" v-model.trim="form.password"/>
                         </el-form-item>
-                        <el-form-item v-if="current_menu==='register'">
+                        <el-form-item v-if="current_menu==='register'" prop="passwords">
                             <label class="from-label">确认密码</label>
-                            <el-input type="password" v-model.trim="passwords"/>
+                            <el-input type="password" v-model.trim="form.passwords"/>
                         </el-form-item>
                         <el-form-item>
                             <label class="from-label">验证码</label>
                             <el-row :gutter="10">
                                 <el-col :span="14">
-                                    <el-input v-model.trim="code"></el-input>
+                                    <el-input v-model.trim="form.code"></el-input>
                                 </el-col>
                                 <el-col :span="10">
                                     <el-button type="success" class="el-button-block">获取验证码</el-button>
@@ -70,24 +70,74 @@
 </style>
 <script>
 import { reactive,toRefs } from 'vue';
+import { validate_email,validate_password,validate_code } from '../../utils/validate'
 export default{
     setup(props,{root}){
         const data = reactive({
-            username:"",
-            password:"",
-            passwords:"",
-            code:"",
+            form:{
+                username:"",
+                password:"",
+                passwords:"",
+                code:"",
+            },
             tab_menu:
             [
                 {type:"login",label:"登录"},
                 {type:"register",label:"注册"}
-            ],current_menu:"login"
+            ],
+            // form_rules:{
+            //     username:[
+            //         {required:true,message:'请输入用户名',tigger:'change'},
+            //         {min:3,max:5,message:'长度在3和5之间',tigger:'change'}
+            //     ],
+
+            // },
+            current_menu:"login"
+        })
+        const validata_username_rules = (rele,value,callback) => {
+            let reg_email = validate_email(value); 
+            if(value===""){
+                callback(new Error("请输入邮箱"))
+            }else if(!reg_email){
+                callback(new Error("请输入正确的邮箱格式"))
+            }else{
+                callback()
+            }
+        }
+        const validata_password_rules=(rule,value,callback) => {
+            let reg_password = validate_password(value);
+            if(value===""){
+                callback(new Error("请输入密码"))
+            }else if(!reg_password){
+                callback(new Error("请输入6-20位的密码,包含数字、字母"))
+            }else{
+                callback()
+            }
+        }
+        const validata_passwords_rules=(rule,value,callback) => {
+            let reg_password = validate_password(value);
+            const passwordValues = data.form.password;
+            if(value===""){
+                callback(new Error("请输入密码"))
+            }else if(!reg_password){
+                callback(new Error("请输入6-20位的密码,包含数字、字母"))
+            }else if(passwordValues && passwordValues !== value){
+                callback(new Error("两次密码不一致"))
+            }
+            else{
+                callback()
+            }
+        }
+        const form_rules = reactive({
+            username:[{validator:validata_username_rules,trigger:'change'}],
+            password:[{validator:validata_password_rules,trigger:'change'}],
+            passwords:[{validator:validata_passwords_rules,trigger:'change'}]
         })
         const toggleMenu = ((type)=>{
             data.current_menu = type
         })
         return{
-            toggleMenu,...toRefs(data)
+            toggleMenu,...toRefs(data),form_rules
         }
     }
 }
