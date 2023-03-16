@@ -2,19 +2,35 @@
     <div id="login">
         <div class="from-warp">
               <ul class="manu-tab">
-                    <li class="current">登录</li>
-                    <li>注册</li>
+                <!-- :class == v-bind -->
+                <!-- @click="current_menu=item.type"   登录注册切换--> 
+                    <li @click="toggleMenu(item.type)" :class="{'current':current_menu===item.type}" v-for="item in tab_menu" :key="item.type">{{ item.label }}</li>
                     <el-form ref="from">
-                        <el-form-item label="username">
+                        <el-form-item>
                             <label class="from-label">用户名</label>
-                            <el-input />
-                        </el-form-item>
-                        <el-form-item label="password">
-                            <label class="from-label">密码</label>
-                            <el-input type="password"/>
+                            <el-input v-model.trim="username"/>
                         </el-form-item>
                         <el-form-item>
-                            <el-button type="primary" @click="">立即创建</el-button>
+                            <label class="from-label">密码</label>
+                            <el-input type="password" v-model.trim="password"/>
+                        </el-form-item>
+                        <el-form-item v-if="current_menu==='register'">
+                            <label class="from-label">确认密码</label>
+                            <el-input type="password" v-model.trim="passwords"/>
+                        </el-form-item>
+                        <el-form-item>
+                            <label class="from-label">验证码</label>
+                            <el-row :gutter="10">
+                                <el-col :span="14">
+                                    <el-input v-model.trim="code"></el-input>
+                                </el-col>
+                                <el-col :span="10">
+                                    <el-button type="success" class="el-button-block">获取验证码</el-button>
+                                </el-col>
+                            </el-row>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="danger" class="el-button-block" disabled>登录</el-button>
                          </el-form-item>
                     </el-form>
               </ul>
@@ -52,3 +68,28 @@
         font-size: 14px;
     }
 </style>
+<script>
+import { reactive,toRefs } from 'vue';
+export default{
+    setup(props,{root}){
+        const data = reactive({
+            username:"",
+            password:"",
+            passwords:"",
+            code:"",
+            tab_menu:
+            [
+                {type:"login",label:"登录"},
+                {type:"register",label:"注册"}
+            ],current_menu:"login"
+        })
+        const toggleMenu = ((type)=>{
+            data.current_menu = type
+        })
+        return{
+            toggleMenu,...toRefs(data)
+        }
+    }
+}
+    
+</script>
