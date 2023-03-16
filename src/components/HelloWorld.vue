@@ -99,16 +99,25 @@
         >
       </li>
     </ul>
+    <el-button @click="handclick">onClick</el-button>
   </div>
 </template>
 
 <script>
+// import { emit } from 'process';
+
 export default {
   name: "HelloWorld",
   props: {
     msg: String,
     data:String,
   },
+  setup(props,{attrs,slots,emit,expose}){
+    console.log(props.msg)
+    const handclick = function(){
+      emit("onClick")
+    }
+  }
 };
 </script>
 
