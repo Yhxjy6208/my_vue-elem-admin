@@ -1,21 +1,22 @@
 const { defineConfig } = require("@vue/cli-service");
 // const path = require("path");
-const ElementPlus = require('unplugin-element-plus/webpack');
-// const AutoImport = require('unplugin-auto-import/webpack');
-// const Components = require('unplugin-vue-components/webpack');
-// const { ElementPlusResolver } = require('unplugin-vue-components/resolvers');
+// const ElementPlus = require('unplugin-element-plus/webpack');
+const AutoImport = require('unplugin-auto-import/webpack');
+const Components = require('unplugin-vue-components/webpack');
+const { ElementPlusResolver } = require('unplugin-vue-components/resolvers');
 
 module.exports = defineConfig({
     transpileDependencies: true,
-    configureWebpack: {
-        plugins: [ElementPlus()],
-    },
+    // 手动按需导入
+    // configureWebpack: {
+    //     plugins: [ElementPlus()],
+    // },
     // 基本路径
     publicPath: process.env.NODE_ENV === 'production' ? '' : './',
     // 输出文件目录
     outputDir: process.env.NODE_ENV === 'production' ? 'dist' : 'devdist',
     // eslint-loader 是否在保存的时候检查
-    lintOnSave: true,
+    lintOnSave: false,
     /** vue3.0内置了webpack所有东西，
      * webpack配置,see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
      **/
@@ -49,14 +50,14 @@ module.exports = defineConfig({
      * 第三方插件配置
      */
     pluginOptions: {},
-    // configureWebpack: {
-    //     plugins: [
-    //         AutoImport({
-    //             resolvers: [ElementPlusResolver()],
-    //         }),
-    //         Components({
-    //             resolvers: [ElementPlusResolver()],
-    //         }),
-    //     ],
-    // }
+    configureWebpack: {
+        plugins: [
+            AutoImport({
+                resolvers: [ElementPlusResolver()],
+            }),
+            Components({
+                resolvers: [ElementPlusResolver()],
+            }),
+        ],
+    }
 });
