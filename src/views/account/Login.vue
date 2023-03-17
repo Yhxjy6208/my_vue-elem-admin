@@ -25,12 +25,12 @@
                                     <el-input v-model.trim="form.code"></el-input>
                                 </el-col>
                                 <el-col :span="10">
-                                    <el-button type="success" class="el-button-block">获取验证码</el-button>
+                                    <el-button @click="getCode" type="success" class="el-button-block">获取验证码</el-button>
                                 </el-col>
                             </el-row>
                         </el-form-item>
                         <el-form-item>
-                            <el-button type="danger" class="el-button-block" disabled>登录</el-button>
+                            <el-button type="danger" class="el-button-block" disabled>{{ current_menu==='register'?"注册" :"登录"}}</el-button>
                          </el-form-item>
                     </el-form>
               </ul>
@@ -69,31 +69,11 @@
     }
 </style>
 <script>
-import { reactive,toRefs } from 'vue';
-import { validate_email,validate_password,validate_code } from '../../utils/validate'
+import { reactive,toRefs,getCurrentInstance } from 'vue';
+import { validate_email,validate_password,validate_code } from '../../utils/validate';
+import { GetCode } from '../../api/common';
 export default{
     setup(props,{root}){
-        const data = reactive({
-            form:{
-                username:"",
-                password:"",
-                passwords:"",
-                code:"",
-            },
-            tab_menu:
-            [
-                {type:"login",label:"登录"},
-                {type:"register",label:"注册"}
-            ],
-            // form_rules:{
-            //     username:[
-            //         {required:true,message:'请输入用户名',tigger:'change'},
-            //         {min:3,max:5,message:'长度在3和5之间',tigger:'change'}
-            //     ],
-
-            // },
-            current_menu:"login"
-        })
         const validata_username_rules = (rele,value,callback) => {
             let reg_email = validate_email(value); 
             if(value===""){
@@ -128,16 +108,58 @@ export default{
                 callback()
             }
         }
-        const form_rules = reactive({
-            username:[{validator:validata_username_rules,trigger:'change'}],
-            password:[{validator:validata_password_rules,trigger:'change'}],
-            passwords:[{validator:validata_passwords_rules,trigger:'change'}]
+        const data = reactive({
+            form:{
+                username:"",
+                password:"",
+                passwords:"",
+                code:"",
+            },
+            tab_menu:
+            [
+                {type:"login",label:"登录"},
+                {type:"register",label:"注册"}
+            ],
+            form_rules:{
+                username:[{validator:validata_username_rules,trigger:'change'}],
+                password:[{validator:validata_password_rules,trigger:'change'}],
+                passwords:[{validator:validata_passwords_rules,trigger:'change'}]
+            },
+            // form_rules:{
+            //     username:[
+            //         {required:true,message:'请输入用户名',tigger:'change'},
+            //         {min:3,max:5,message:'长度在3和5之间',tigger:'change'}
+            //     ],
+
+            // },
+            current_menu:"login"
         })
+        
         const toggleMenu = ((type)=>{
             data.current_menu = type
         })
+        // const {proxy} = getCurrentInstance()
+        const getCode=()=>{
+            // proxy.$axios.post("http://v3.web-jshtml.cn/api/getCode/",
+            // {username:data.form.username,module:"register"})
+            // const username = data.form.username;
+            // const password = data.form.password;
+            // const passwords = data.form.passwords;
+            if(!validate_email(username)){
+                proxy.$message({
+                    message:"用户名不能为空",
+                    type:"error"
+                })
+                return false
+            }
+            const data_post = {username:data.form.username,module:"register"}
+            GetCode(data_post).then(response=>{
+                console.log(response)
+            }).catch(error=>{})
+
+        }
         return{
-            toggleMenu,...toRefs(data),form_rules
+            toggleMenu,...toRefs(data),getCode
         }
     }
 }

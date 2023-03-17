@@ -2,6 +2,9 @@ import { createApp } from "vue";
 import App from "./App.vue";
 import router from "./router";
 import store from "./store";
+import axios from "axios";
+const app = createApp(App);
+app.config.globalProperties.$axios = axios;
 // import Login from './views/account/Login.vue';
 // import Elementui from "./plugins/elementui";
 
@@ -13,5 +16,5 @@ import store from "./store";
 // import 'element-plus/dist/index.css'
 // createApp(App).use(store).use(router).use(ElementPlus).mount("#app");
 
-createApp(App).use(store).use(router).mount("#app");
+app.use(store).use(router).mount("#app");
 // createApp(Login).use(store).use(router).mount("#app");

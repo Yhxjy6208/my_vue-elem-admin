@@ -45,7 +45,22 @@ module.exports = defineConfig({
      */
     pwa: {},
     // webpack-dev-server 相关配置
-    devServer: {},
+    devServer: {
+        open: false,
+        host: '0.0.0.0',
+        port: 8080,
+        proxy: {
+            [process.env.VUE_APP_API]: {
+                target: process.env.VUE_APP_API_DEV_TARGET,
+                changeOrigin: true,
+                ws: false,
+                secure: false,
+                pathRewrite: {
+                    [`^${process.env.VUE_APP_API}`]: ''
+                }
+            }
+        }
+    },
     /**
      * 第三方插件配置
      */
