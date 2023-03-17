@@ -145,13 +145,13 @@ export default{
             // const username = data.form.username;
             // const password = data.form.password;
             // const passwords = data.form.passwords;
-            if(!validate_email(username)){
-                proxy.$message({
-                    message:"用户名不能为空",
-                    type:"error"
-                })
-                return false
-            }
+            // if(!validate_email(username)){
+            //     proxy.$message({
+            //         message:"用户名不能为空",
+            //         type:"error"
+            //     })
+            //     return false
+            // }
             const data_post = {username:data.form.username,module:"register"}
             GetCode(data_post).then(response=>{
                 console.log(response)
