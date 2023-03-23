@@ -5,7 +5,7 @@
                 <!-- :class == v-bind -->
                 <!-- @click="current_menu=item.type"   登录注册切换--> 
                     <li @click="toggleMenu(item.type)" :class="{'current':current_menu===item.type}" v-for="item in tab_menu" :key="item.type">{{ item.label }}</li>
-                    <el-form ref="from" :model="form" :rules="form_rules">
+                    <el-form ref="account_from" :model="form" :rules="form_rules">
                         <el-form-item prop="username">
                             <label class="from-label">邮箱</label>
                             <el-input v-model.trim="form.username"/>
@@ -18,7 +18,7 @@
                             <label class="from-label">确认密码</label>
                             <el-input type="password" v-model.trim="form.passwords"/>
                         </el-form-item>
-                        <el-form-item>
+                        <el-form-item prop="code">
                             <label class="from-label">验证码</label>
                             <el-row :gutter="10">
                                 <el-col :span="14">
@@ -31,7 +31,7 @@
                             </el-row>
                         </el-form-item>
                         <el-form-item>
-                            <el-button type="danger" class="el-button-block" disabled>{{ current_menu==='register'?"注册" :"登录"}}</el-button>
+                            <el-button @click="submitForm" type="danger" class="el-button-block" :disabled="data_submit_button" :loading="data_submit_button_loading">{{ current_menu==='register'?"注册" :"登录"}}</el-button>
                          </el-form-item>
                     </el-form>
               </ul>
@@ -70,11 +70,50 @@
     }
 </style>
 <script>
-import { reactive,toRefs,onBeforeUnmount } from 'vue';
-import { validate_email,validate_password } from '../../utils/validate';
-import { GetCode } from '../../api/common';
+import { reactive,toRefs,onBeforeUnmount,getCurrentInstance } from 'vue';
+import { validate_email,validate_password,validate_code } from '../../utils/validate';
+import { GetCode,ErrorHttp,Register } from '../../api/common';
 export default{
     setup(props,{root}){
+        const {proxy} = getCurrentInstance()
+        const submitForm = ()=>{
+            proxy.$refs.account_from.validate((valid)=>{
+                if(valid){
+                    data.current_menu==="login"?login():register();
+                }else{
+                    alert('表单校验不通过');
+                    return false;
+                }
+            })
+        }
+        const login = ()=>{
+            console.log(1111)
+        }
+        const reset = ()=>{
+            proxy.$refs.form.resetFields()//四个input全部重置
+            data.current_menu="login"//返回登录状态
+            data.code_button_timer && clearInterval(data.code_button_timer)
+            data.code_button_text = "获取验证码"
+            data.code_button_disable = false
+            data.data_submit_button = true
+            data_submit_button_loading = false
+        }
+        const register = ()=>{
+            const data_post = {
+                username:data.form.username,
+                password:data.form.password,
+                code:data.form.code
+            }
+            data.data_submit_button_loading = true;
+            Register(data_post).then(response=>{
+                ElMessage.success({
+                    message:response.message
+                })
+                reset()
+            }).catch(error=>{
+                data.data_submit_button_loading = false;
+            })
+        }
         const validata_username_rules = (rele,value,callback) => {
             let reg_email = validate_email(value); 
             if(value===""){
@@ -96,6 +135,7 @@ export default{
             }
         }
         const validata_passwords_rules=(rule,value,callback) => {
+            if(data.current_menu==='login'){callback()}
             let reg_password = validate_password(value);
             const passwordValues = data.form.password;
             if(value===""){
@@ -104,6 +144,17 @@ export default{
                 callback(new Error("请输入6-20位的密码,包含数字、字母"))
             }else if(passwordValues && passwordValues !== value){
                 callback(new Error("两次密码不一致"))
+            }
+            else{
+                callback()
+            }
+        }
+        const validata_code_rules=(rule,value,callback) => {
+            let reg_code = validate_code(value);
+            if(value===""){
+                callback(new Error("请输入验证码"))
+            }else if(!reg_code){
+                callback(new Error("请输入正确的验证码格式"))
             }
             else{
                 callback()
@@ -124,7 +175,8 @@ export default{
             form_rules:{
                 username:[{validator:validata_username_rules,trigger:'change'}],
                 password:[{validator:validata_password_rules,trigger:'change'}],
-                passwords:[{validator:validata_passwords_rules,trigger:'change'}]
+                passwords:[{validator:validata_passwords_rules,trigger:'change'}],
+                code:[{validator:validata_code_rules,trigger:'change'}]
             },
             // form_rules:{
             //     username:[
@@ -137,7 +189,9 @@ export default{
             code_button_loading:false,//true才是阻拦
             code_button_disable:false,//true才是阻拦
             code_button_text:"获取验证码",
-            code_button_timer:null
+            code_button_timer:null,
+            data_submit_button:false,
+            data_submit_button_loading:false
         })
         
         const toggleMenu = ((type)=>{
@@ -193,31 +247,33 @@ export default{
             data.code_button_loading = true
             data.code_button_text = "发送中"
             const data_post = {username:data.form.username,module:"register"}
+            // ErrorHttp(data_post).then(response=>{
+            //     console.log(response)
+            // }).catch(error=>{
+            //     console.log(error)
+            // })
             GetCode(data_post).then(response=>{
-                const data_response = response.data;
-                if (data_response.resCode===1024){
+                if (response.resCode===1024){
                     ElMessage.error({
-                        message:data_response.message,
-                        duration:0
+                        message:response.message
                     })
                     data.code_button_loading = false
                     data.code_button_text = "获取验证码"
-                }else{
-                    ElMessage.success({
-                        message:data_response.message,
-
-                    })
-                    count_down()
+                    return false
                 }
-                
+                ElMessage.success({
+                    message:response.message,
+                })
+                count_down()  
+                data.data_submit_button = false
             }).catch(error=>{
                 data.code_button_loading = false
-                data.code_button_text = "获取验证码"
+                data.code_button_text = "再次获取"
             })
 
         }
         return{
-            toggleMenu,...toRefs(data),getCode
+            toggleMenu,...toRefs(data),getCode,submitForm
         }
     }
 }
