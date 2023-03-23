@@ -8,13 +8,28 @@ const service = axios.create({
 service.interceptors.request.use(function(config) {
     return config
 }, function(error) {
+    console.log(111)
     return Promise.reject(error)
 })
 
 service.interceptors.response.use(function(response) {
-    return response
+    const data = response.data;
+    if (data.resCode === 0) {
+        return Promise.resolve(data)
+    } else {
+        ElMessage.error({
+            message: data.message
+        })
+        return Promise.resolve(data)
+    }
 }, function(error) {
-    return Promise.reject(error)
+    const errorData = JSON.parse(error.request.response)
+    if (errorData.message) {
+        ElMessage.error({
+            message: errorData.message
+        })
+    }
+    return Promise.reject(errorData)
 })
 
 export default service;

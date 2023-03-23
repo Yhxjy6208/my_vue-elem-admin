@@ -7,3 +7,19 @@ export function GetCode(data) {
         data
     })
 }
+
+export function ErrorHttp(data) {
+    return service.request({
+        method: "post",
+        url: "/news/detailed/",
+        data
+    })
+}
+
+export function Register(data) {
+    return service.request({
+        method: "post",
+        url: "/register/",
+        data
+    })
+}

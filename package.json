@@ -5,7 +5,8 @@
     "scripts": {
         "serve": "vue-cli-service serve",
         "build": "vue-cli-service build",
-        "lint": "vue-cli-service lint"
+        "lint": "vue-cli-service lint",
+        "jjj": "vue-cli-service serve"
     },
     "dependencies": {
         "ajv": "^8.12.0",
