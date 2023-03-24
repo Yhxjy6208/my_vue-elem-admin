@@ -20,7 +20,7 @@ service.interceptors.response.use(function(response) {
         ElMessage.error({
             message: data.message
         })
-        return Promise.resolve(data)
+        return Promise.reject(data)
     }
 }, function(error) {
     const errorData = JSON.parse(error.request.response)
