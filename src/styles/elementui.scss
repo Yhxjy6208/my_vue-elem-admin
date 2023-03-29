@@ -6,3 +6,7 @@
 .el-message {
     --el-message-min-width: !important;
 }
+
+#layout-aside .el-menu{
+    border-right: none;
+}
