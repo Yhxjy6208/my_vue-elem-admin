@@ -1,6 +1,6 @@
 <template>
     <el-menu default-active="4" background-color="#344a5f" text-color="#fff"
-        active-text-color="#ffd04b" 
+        active-text-color="#ffd04b" router
     >
         <template v-for="item in routers" :key="item.path">
             <template v-if="!item.hidden">
@@ -38,7 +38,6 @@
                 const childRouter = children.filter(item=>{
                     return item.hidden? false:true;
                 })
-                console.log(childRouter)
                 if (childRouter.length===1){
                     return true
                 }
