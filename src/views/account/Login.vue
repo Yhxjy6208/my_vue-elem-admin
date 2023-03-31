@@ -75,9 +75,12 @@ import { validate_email,validate_password,validate_code } from '../../utils/vali
 import { GetCode } from '../../api/common';
 import { Login,Register} from "../../api/account";
 import sha1 from 'js-sha1';
+import {useStore} from 'vuex';
+// import { response } from 'express';
 export default{
     setup(props,{root}){
         const {proxy} = getCurrentInstance()
+        const store = useStore();
         const submitForm = ()=>{
             proxy.$refs.account_from.validate((valid)=>{
                 if(valid){
@@ -92,7 +95,7 @@ export default{
         const zz = ()=>{
             if(submitForm && data.current_menu==="login"){
                 login()
-            }else{
+            }else if(submitForm && data.current_menu==="register"){
                 register()
             }
         }
@@ -103,7 +106,8 @@ export default{
                 code:data.form.code
             }
             data.data_submit_button_loading = true;
-            Login(data_post).then(response=>{
+            store.dispatch("app/loadAction",data_post).then(response=>{
+                // Login(data_post).then(response=>{
                 ElMessage.success({
                     message:response.message
                 })
@@ -213,7 +217,7 @@ export default{
             code_button_disable:false,//true才是阻拦
             code_button_text:"获取验证码",
             code_button_timer:null,
-            data_submit_button:false,
+            data_submit_button:true,
             data_submit_button_loading:false
         })
         
@@ -251,7 +255,7 @@ export default{
             if(!validate_email(username)){
                 ElMessage.error({
                     message:"用户名不能为空 或 格式不正确",
-                    duration:0
+                    // duration:0
                 })
                 return false
             }

@@ -1,5 +1,5 @@
 <template> 
-    <h1 class="logo"><img :src="logo" alt="nice to meet you"></h1>
+    <h1><img class="logo" :src="logo" alt="nice to meet you" ></h1>
     <el-menu :default-active="currentPath" background-color="#344a5f" text-color="#fff"
         active-text-color="#ffffff" router
     >
@@ -65,7 +65,7 @@
     .logo{
         width: 200px;
         padding: 20px 0;
-        padding-bottom: 1px solid #2d4153;
+        border-bottom: 1px solid #2d4153;
         img {margin: auto;}
     }
 </style>
