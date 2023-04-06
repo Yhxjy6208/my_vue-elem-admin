@@ -1,7 +1,7 @@
 <template> 
-    <h1><img class="logo" :src="logo" alt="nice to meet you" ></h1>
+    <h1 class="logo"><img  :src="logo" alt="nice to meet you" ></h1>
     <el-menu :default-active="currentPath" background-color="#344a5f" text-color="#fff"
-        active-text-color="#ffffff" router
+        active-text-color="#ffffff" router :collapse="collapse"  
     >
         <template v-for="item in routers" :key="item.path">
             <template v-if="!item.hidden">
@@ -15,7 +15,10 @@
                     <!-- 子级菜单 -->
                 <template v-else>
                     <el-sub-menu v-if="item.children && item.children.length>0" :index="item.path">
-                            <template #title><svg-icon :icon-name="item.meta && item.meta.icon" class-name="aside-menu-svg"></svg-icon>{{item.meta && item.meta.title}}</template>
+                            <template #title>
+                                <svg-icon :icon-name="item.meta && item.meta.icon" class-name="aside-menu-svg"></svg-icon>
+                                <span>{{item.meta && item.meta.title}}</span>
+                            </template>
                             <template v-for="child in item.children">
                             <el-menu-item v-if="!child.hidden" :index="child.path">
                                 {{child.meta && child.meta.title}}
@@ -30,10 +33,18 @@
 <script>
     import { useRouter,useRoute } from 'vue-router';
     import { computed,toRefs,reactive } from 'vue';
+    import {useStore} from 'vuex';
     export default{
         setup(){
+            const store = useStore();
             const data = reactive({
-                logo:require('@/assets/gsx.png')
+                logo:computed(()=>{
+                    return store.state.app.collapse
+                    ?require('@/assets/logo-min.png')
+                    :require('@/assets/logo.png')
+
+                }),
+                collapse:computed(()=>store.state.app.collapse)//true 收起菜单
             });
             const { options } = useRouter();
             const routers = options.routes;
@@ -63,7 +74,6 @@
 </script>
 <style lang="scss" scoped>
     .logo{
-        width: 200px;
         padding: 20px 0;
         border-bottom: 1px solid #2d4153;
         img {margin: auto;}

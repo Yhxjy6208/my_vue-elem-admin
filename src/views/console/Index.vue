@@ -14,6 +14,12 @@
 import {useStore} from 'vuex';
 export default{
     setup(){
+        // window.cookie_value = document.cookie.split(";").forEach((key,value)=>{
+        //     key.split("=")[1]
+        // })
+
+
+
         const store = useStore();//多一层少一层
         const {state} = useStore();
         const value = state.app.count

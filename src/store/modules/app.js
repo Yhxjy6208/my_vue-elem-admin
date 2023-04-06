@@ -2,8 +2,10 @@ import { Login } from "@/api/account"
 
 const state = { 
     count:100,
-    text:"Vue+Element+js"
+    text:"Vue+Element+js",
+    collapse:false
 }//存储
+
 const getters = {
     getCount:(state)=>{
         return state.count+10
@@ -18,6 +20,17 @@ const mutations = {
     },
     SET_TEXT(state,payload){
         state.text = payload
+    },
+    SET_COLLAPSE(state){
+        state.collapse = !state.collapse
+        
+        // // state.collapse?state.collapse=false:state.collapse=true
+
+        // if (state.collapse){
+        //     state.collapse=false
+        // }else{
+        //     state.collapse=true
+        // }
     }
 }//更新
 const actions = {
