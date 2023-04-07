@@ -17,7 +17,13 @@ export default{
         // window.cookie_value = document.cookie.split(";").forEach((key,value)=>{
         //     key.split("=")[1]
         // })
-
+        const cookie_json ={}
+        document.cookie.split(";").map(function(item){
+            let new_arr = item.split("=")
+            cookie_json[new_arr[0]]=new_arr[1]
+        })
+        const new_cookie_json = JSON.stringify(cookie_json)
+        console.log(new_cookie_json)
 
 
         const store = useStore();//多一层少一层

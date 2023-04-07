@@ -3,7 +3,7 @@ import { Login } from "@/api/account"
 const state = { 
     count:100,
     text:"Vue+Element+js",
-    collapse:false
+    collapse:JSON.parse(sessionStorage.getItem('collapse')) || false
 }//存储
 
 const getters = {
@@ -23,6 +23,8 @@ const mutations = {
     },
     SET_COLLAPSE(state){
         state.collapse = !state.collapse
+        sessionStorage.setItem('collapse',JSON.stringify(state.collapse))
+        // localStorage.setItem('zz',JSON.stringify(state.collapse))
         
         // // state.collapse?state.collapse=false:state.collapse=true
 
