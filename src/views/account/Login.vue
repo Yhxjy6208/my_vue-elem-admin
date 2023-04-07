@@ -71,11 +71,12 @@
 </style>
 <script>
 import { reactive,toRefs,onBeforeUnmount,getCurrentInstance } from 'vue';
-import { validate_email,validate_password,validate_code } from '../../utils/validate';
-import { GetCode } from '../../api/common';
-import { Login,Register} from "../../api/account";
+import { validate_email,validate_password,validate_code } from '@u/validate';
+import { GetCode } from '@a/common';
+import { Login,Register} from "@a/account";
 import sha1 from 'js-sha1';
 import {useStore} from 'vuex';
+import router from '@/router';
 // import { response } from 'express';
 export default{
     setup(props,{root}){
@@ -107,10 +108,11 @@ export default{
             }
             data.data_submit_button_loading = true;
             store.dispatch("app/loadAction",data_post).then(response=>{
-                // Login(data_post).then(response=>{
+            // Login(data_post).then(response=>{
                 ElMessage.success({
                     message:response.message
                 })
+                router.push({path:"/console"})
                 reset()
             }).catch(error=>{
                 data.data_submit_button_loading = false;

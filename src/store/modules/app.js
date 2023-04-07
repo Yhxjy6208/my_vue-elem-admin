@@ -1,9 +1,12 @@
-import { Login } from "@/api/account"
+import { Login } from "@a/account"
+import { setToken,setUserName} from '@u/cookies'//只有一个叫cookies的文件就不需要写文件的尾缀
 
 const state = { 
     count:100,
     text:"Vue+Element+js",
-    collapse:JSON.parse(sessionStorage.getItem('collapse')) || false
+    collapse:JSON.parse(sessionStorage.getItem('collapse')) || false,
+    token:'',
+    username:''
 }//存储
 
 const getters = {
@@ -25,7 +28,7 @@ const mutations = {
         state.collapse = !state.collapse
         sessionStorage.setItem('collapse',JSON.stringify(state.collapse))
         // localStorage.setItem('zz',JSON.stringify(state.collapse))
-        
+
         // // state.collapse?state.collapse=false:state.collapse=true
 
         // if (state.collapse){
@@ -33,6 +36,14 @@ const mutations = {
         // }else{
         //     state.collapse=true
         // }
+    },
+    SET_TOKEN(state,value){
+        state.token = value
+        value && setToken(value)
+    },
+    SET_USERNAME(state,value){
+        state.username = value
+        value && setUserName(value)
     }
 }//更新
 const actions = {
@@ -45,6 +56,9 @@ const actions = {
     loadAction(context,requesData){
         return new Promise((resolve,reject)=>{
             Login(requesData).then((response)=>{
+                let data = response.data
+                context.commit('SET_TOKEN',data.token)
+                context.commit('SET_USERNAME',data.username)
                 resolve(response)
             }).catch(error=>{
                 reject(error)

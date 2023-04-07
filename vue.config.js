@@ -25,6 +25,17 @@ module.exports = defineConfig({
      * webpack配置,see https://github.com/vuejs/vue-cli/blob/dev/docs/webpack.md
      **/
     chainWebpack: (config) => {
+        config.resolve.alias 
+            .set('@',path.resolve(__dirname,'./src'))
+            .set('@u',path.resolve(__dirname,'./src/utils'))
+            .set('@a',path.resolve(__dirname,'./src/api'))
+            .set('@c',path.resolve(__dirname,'./src/components'))
+            .set('@r',path.resolve(__dirname,'./src/router'))
+            // 我也不知道有没有问题 不写文件后缀依次解析
+            config.resolve.extensions
+            .add('extensions',['.js','.json','.vue'])
+            // 'extensions':['.js','.json','.vue']
+        
         config.module.rule('svg')
         .exclude.add(resolve('src/components/svgIcon/icon')).end()
         config.module.rule('icons')
