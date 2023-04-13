@@ -1,5 +1,7 @@
 import axios from "axios";
-import { getToken,getUserName } from "./cookies";
+import { getToken,getUserName,delToken,delUserName } from "./cookies";
+import router from "@/router";
+
 
 const service = axios.create({
     baseURL: process.env.VUE_APP_API,
@@ -38,6 +40,13 @@ service.interceptors.response.use(function(response) {
         ElMessage.error({
             message: errorData.message
         })
+    }
+    if (errorData.resCode==1010){
+        router.replace({
+            name:"Login"
+        })
+        delToken()
+        delUserName()
     }
     return Promise.reject(errorData)
 })
