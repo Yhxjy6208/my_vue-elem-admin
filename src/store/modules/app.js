@@ -4,6 +4,7 @@ import { setToken,setUserName,getToken,getUserName,delToken,delUserName} from '@
 const state = { 
     count:100,
     text:"Vue+Element+js",
+    //记录菜单栏是否收起来
     collapse:JSON.parse(sessionStorage.getItem('collapse')) || false,
     token:'' || getToken(),
     username:'' || getUserName()

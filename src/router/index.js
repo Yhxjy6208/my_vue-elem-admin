@@ -1,16 +1,18 @@
 import { createRouter, createWebHashHistory } from "vue-router";
-import HomeView from "../views/HomeView.vue";
+// import HomeView from "../views/HomeView.vue";
+import  { Login }  from "../views/account/Login.vue";
+import Index from "../Layout/Index.vue";
 
 const routes = [
     {
         path: "/",
         name: "home",
-        redirect:"Login",//重定向
+        // redirect:"Login",//重定向
         hidden:true,//渲染侧菜单栏时要不要判断
         // meta:{
         //     title:"根路径"
         // },
-        component: HomeView,
+        component: Index,
     },
     {
         path: "/login",

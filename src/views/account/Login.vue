@@ -191,8 +191,8 @@ export default{
         }
         const data = reactive({
             form:{
-                username:"",
-                password:"",
+                username:"106430589111@qq.com",
+                password:"cjy123",
                 passwords:"",
                 code:"",
             },
