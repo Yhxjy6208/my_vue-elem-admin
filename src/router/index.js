@@ -96,7 +96,7 @@ const routes = [
             },{
                 path:"/newsDetailed",
                 name:"NewsDetaile",
-                hidden:true,
+                // hidden:true,
                 meta:{
                     title:"信息详情"
                 },
