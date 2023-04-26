@@ -15,9 +15,11 @@ createApp(App).use(Vuex)
 
 
 import app from './modules/app';
+import info from "./modules/info"
 
 export default createStore({
   modules:{
-    app
+    app,
+    info
   }
 })
