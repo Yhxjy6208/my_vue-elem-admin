@@ -26,7 +26,7 @@ service.interceptors.request.use(function(config) {
 //请求后
 service.interceptors.response.use(function(response) {
     const data = response.data;
-    if (data.resCode === 0) {
+    if (data.resCode=== 0 ) {
         return Promise.resolve(data)
     } else {
         ElMessage.error({

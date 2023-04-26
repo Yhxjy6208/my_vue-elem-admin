@@ -59,7 +59,7 @@ module.exports = defineConfig({
     //css
     css: {
         // 是否使用css分离插件 ExtractTextPlugin
-        extract: true,
+        extract: { ignoreOrder:true },//忽略排序
         // 开启 CSS source maps?
         sourceMap: false,
         // css预设器配置项
