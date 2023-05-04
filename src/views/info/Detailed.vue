@@ -13,7 +13,7 @@
         <el-form-item label="信息标题:" prop="title">
             <el-input v-model="filed.title"></el-input>
         </el-form-item>
-        <el-form-item label="　缩略图:" prop="imageUrl">
+        <el-form-item label="　缩略图:" prop="image_url">
             <el-upload class="avatar-uploader" 
             action="#" list-type="picture-card" :auto-upload="true"
             :http-request="handUpload"
@@ -47,7 +47,7 @@
                         </span>
                     </div>
                 </template> -->
-                <img v-if="filed.imageUrl" :src="filed.imageUrl" class="avatar">
+                <img v-if="filed.image_url" :src="filed.image_url" class="avatar">
                 <span>+</span>
             </el-upload>
 
@@ -96,7 +96,7 @@ import dayjs from 'dayjs';
             const {infoData,handGetCategory:getList} = categoryHook()
             const data = reactive({
                 filed:{
-                    imageUrl:"",
+                    image_url:"",
                     category_id:"",
                     title:"",
                     create_date:"",
@@ -201,7 +201,7 @@ import dayjs from 'dayjs';
                 const from = new FormData()
                 from.append("files",file)
                 UploadFile(from).then(response=>{
-                    data.filed.imageUrl = response.data.files_path
+                    data.filed.image_url = response.data.files_path
                 })
             }
             return{...toRefs(data),
