@@ -3,19 +3,27 @@
         <el-col :span="18">
             <el-form :inline="true">
                 <el-form-item label="类别">
-                    <el-select placeholder="请选择" class="width-160" v-model="category">
+                    <el-cascader v-model="request_data.category_id" 
+                    :options="infoData.category_options"
+                    :props="cascader_props"
+                    ></el-cascader>
+                    <!-- <el-select placeholder="请选择" class="width-160" v-model="category">
                         <el-option v-for="item in category_options" 
+                        :key="item.value" :value="item.value" :label="item.label"></el-option>
+                    </el-select> -->
+                </el-form-item>
+                <el-form-item label="关键字">
+                    <el-select placeholder="请选择" class="width-100" v-model="request_data.key">
+                        <el-option v-for="item in keyword_options" 
                         :key="item.value" :value="item.value" :label="item.label"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="关键字">
-                    <el-select placeholder="请选择" class="width-100"></el-select>
+                <el-form-item >
+                    <el-input placeholder="请输入关键字" class="width-180" 
+                    v-model="request_data.keyword"></el-input>
                 </el-form-item>
                 <el-form-item >
-                    <el-input placeholder="请输入关键字" class="width-180"></el-input>
-                </el-form-item>
-                <el-form-item >
-                    <el-button type="danger">搜索</el-button>
+                    <el-button type="danger" @click="handleGetList">搜索</el-button>
                 </el-form-item>
             </el-form>
         </el-col>
@@ -35,19 +43,22 @@
     <el-table-column prop="createDate" label="日期" :formatter="formDate"/>
     <el-table-column prop="status" label="发布动态">
         <template #default="scope">
-            <el-switch v-model="scope.row.status"></el-switch>
+            <el-switch v-model="scope.row.status" @change="changeStatus($event,scope.row)"
+            :loading="scope.row.loading"></el-switch>
         </template>
     </el-table-column>
     <el-table-column prop="address" label="操作" width="200" >
         <template #default="scoped">
             <el-button type="danger" size="small">编辑</el-button>
-            <el-button size="small">删除</el-button>
+            <el-button size="small" @click="handleDeleteConfirm(scoped.row.id)">删除</el-button>
         </template>
     </el-table-column>
     </el-table>
     <el-row class="margin-top-30" >
         <el-col :span="6" >
-            <el-button class="pull-left">批量删除</el-button>
+            <el-button class="pull-left" :disabled="!row_data_id"
+            @click="handleDeleteConfirm(row_data_id)"
+            >批量删除</el-button>
         </el-col>
         <el-col :span="18" >
             <div class="demo-pagination-block pull-right">
@@ -88,47 +99,138 @@
 <script>
 // import { zhCn } from 'element-plus/lib/locale';
 import { reactive,toRefs,onBeforeMount } from 'vue';
-import { GetTabList } from '@a/info';
+import { GetTabList,ChangeStatus,NewsDelete } from '@a/info';
 import { getDate } from "@a/common";
 import dayjs from 'dayjs';
+import { categoryHook } from '../hook/infoHook';
 export default{
     setup(){
         onBeforeMount(()=>{
             handleGetList()
+            getList()
         })
         const data = reactive({
             category:2,
             total:0,
-            category_options:[
-                {label:"人工智能",value:0},
-                {label:"技术",value:1}
-            ],
+            // category_options:[
+            //     {label:"人工智能",value:1},
+            //     {label:"技术",value:0},
+            //     {label:"设计",value:2}
+            // ],
+            cascader_props:{
+                label:"category_name",
+                value:"id"
+            },
             tableData:[
-                { name:"王子李",address:"上海市浦东区解放小区158号",date:"2023-4-10" },
-                { name:"王子李",address:"上海市浦东区解放小区158号",date:"2023-4-10" }
+                
+            ],
+            row_data_id:'',
+            keyword_options:[
+                {label:"ID",value:"id"},
+                {label:"标题",value:"title"}
+
             ]
         })
+        const {infoData,handGetCategory:getList} = categoryHook()//:取别名
+        
         const request_data = reactive({
+            key:"",
+            keyword:"",
             pageNumber:1,//单前页码
-            pageSize:10 //每页数量
+            pageSize:10, //每页数量
+            category_id:[]
         })
         //请求信息列表数据
         const handleGetList =()=>{
+            const request_data = formParms()
             GetTabList(request_data).then(response=>{
                 const response_data = response.data
                 data.tableData = response_data.data
                 data.total = response_data.total
             })
         }
+        const formParms = ()=>{
+            const data = Object.assign({},request_data)
+            if(data.category_id.length){
+                data.category_id = data.category_id[data.category_id.length-1]
+            }else{
+                delete data.category_id
+            }
+            if(data.key && data.keyword){
+                data[data.key]= data.keyword
+            }
+            delete data.key
+            delete data.keyword
+            return data
+        }
         const formDate = (row)=>{
             return getDate({value:row.createDate*1000})
             return dayjs(row.createDate*1000).format('YYYY-MM-DD HH:mm:ss')
         }
-        const handleSelectionChange = ()=>{
-
+        const handleSizeChange = (val)=>{
+            request_data.pageSize = val
+            request_data.pageNumber = 1
+            handleGetList()
+        }
+        //页码改变
+        const handleCurrentChange = (val)=>{
+            request_data.pageNumber = val
+            handleGetList()
+        }
+        //改变状态
+        const changeStatus = (value,data)=>{
+            data.loading = true
+            data.status = !data.status
+            console.log({id:data.id,status:value})
+            ChangeStatus({id:data.id,status:value}).then(response=>{
+                ElMessage.success(response.message)
+                data.status = value
+                data.loading = false
+            }).catch(error=>{
+                data.loading = false
+            })
+        }
+        //删除新闻
+        const handleDeleteConfirm = (value)=>{
+            ElMessageBox.confirm('确定删除该分类吗? 删除后将无法恢复','提示',{
+                    confirmButtonText:'确定',
+                    cancelButtonText:'取消',
+                    type:'warning',
+                    showClose:false,//右上角的关闭
+                    closeOnClickModal:false,//无法点击屏幕取消操作
+                    closeOnPressEscape:false, //无法按esc取消操作
+                    beforeClose:(action,instance,done)=>{
+                        if(action==='confirm'){
+                            instance.confirmButtonLoading = true
+                            NewsDelete({id:value}).then(response=>{
+                                ElMessage.success(response.message)
+                                data.row_data_id = ''
+                                instance.confirmButtonLoading = false
+                                done()
+                                handleGetList()
+                            }).catch(error=>{
+                                instance.confirmButtonLoading = false
+                                done()
+                            })
+                        }else{
+                            done()
+                        }
+                    }
+                })
+        }
+        //点击选择删除存储数据准备删除
+        const handleSelectionChange = (val)=>{
+            if(val && val.length > 0){
+                const idItem = val.map(item=>item.id)
+                data.row_data_id = idItem.join()
+            }else{
+                data.row_data_id = ''
+            }
         }
         // let locale =zhCn
-        return {...toRefs(data),handleSelectionChange,formDate}
+        return {...toRefs(data),handleSelectionChange,formDate,request_data,infoData,
+            handleSizeChange,handleCurrentChange,changeStatus,handleDeleteConfirm,handleGetList
+        }
     }
 }
 </script>

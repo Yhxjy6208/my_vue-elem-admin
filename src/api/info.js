@@ -62,3 +62,21 @@ export function GetTabList(data) {
         data
     })
 }
+
+//发布状态
+export function ChangeStatus(data) {
+    return service.request({
+        method: "post",
+        url: "/news/status/",
+        data
+    })
+}
+
+//删除新闻
+export function NewsDelete(data) {
+    return service.request({
+        method: "post",
+        url: "/news/delete/",
+        data
+    })
+}
