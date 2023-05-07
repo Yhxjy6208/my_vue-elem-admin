@@ -64,12 +64,7 @@
             <div class="demo-pagination-block pull-right">
             <el-pagination
             :locale="locale"
-            v-model:current-page="currentPage4"
-            v-model:page-size="pageSize4"
             :page-sizes="[10, 20, 30, 40]"
-            :small="small"
-            :disabled="disabled"
-            :background="background"
             layout="total, sizes, prev, pager, next, jumper"
             :total="100"
             @size-change="handleSizeChange"
@@ -181,7 +176,6 @@ export default{
         const changeStatus = (value,data)=>{
             data.loading = true
             data.status = !data.status
-            console.log({id:data.id,status:value})
             ChangeStatus({id:data.id,status:value}).then(response=>{
                 ElMessage.success(response.message)
                 data.status = value
