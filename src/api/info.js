@@ -80,3 +80,21 @@ export function NewsDelete(data) {
         data
     })
 }
+
+//获取详情页
+export function GetDetailed(data) {
+    return service.request({
+        method: "post",
+        url: "/news/detailed/",
+        data
+    })
+}
+
+//修改详情页
+export function EditInfo(data) {
+    return service.request({
+        method: "post",
+        url: "/news/editInfo/",
+        data
+    })
+}

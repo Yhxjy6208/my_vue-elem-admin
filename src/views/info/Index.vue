@@ -1,4 +1,8 @@
 <template>
+    <BasisTable :coulums="table_config.table_header" 
+    :config="table_config.config"
+    :request = "table_config.request"
+    ></BasisTable>
     <el-row>
         <el-col :span="18">
             <el-form :inline="true">
@@ -28,7 +32,9 @@
             </el-form>
         </el-col>
         <el-col :span="6">
-            <el-button type="danger" class="pull-right">新增</el-button>
+            <router-link to='/newsDetailed'>
+                <el-button type="danger" class="pull-right">新增</el-button>
+            </router-link> 
         </el-col>
     </el-row>
     <el-table 
@@ -37,7 +43,6 @@
     :data="tableData"
     style="width: 100%"
     @selection-change="handleSelectionChange">
-    <el-table-column type="selection" width="40" />
     <el-table-column prop="title" label="标题" width="500" />
     <el-table-column prop="category_name" label="类别" />
     <el-table-column prop="createDate" label="日期" :formatter="formDate"/>
@@ -49,30 +54,11 @@
     </el-table-column>
     <el-table-column prop="address" label="操作" width="200" >
         <template #default="scoped">
-            <el-button type="danger" size="small">编辑</el-button>
+            <el-button type="danger" size="small" @click="handleDetailed(scoped.row.id)">编辑</el-button>
             <el-button size="small" @click="handleDeleteConfirm(scoped.row.id)">删除</el-button>
         </template>
     </el-table-column>
     </el-table>
-    <el-row class="margin-top-30" >
-        <el-col :span="6" >
-            <el-button class="pull-left" :disabled="!row_data_id"
-            @click="handleDeleteConfirm(row_data_id)"
-            >批量删除</el-button>
-        </el-col>
-        <el-col :span="18" >
-            <div class="demo-pagination-block pull-right">
-            <el-pagination
-            :locale="locale"
-            :page-sizes="[10, 20, 30, 40]"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="100"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"/>
-            </div>
-        </el-col>
-    </el-row>
-
 </template>
 <style scoped>
     .width-180{
@@ -93,16 +79,43 @@
 </style>
 <script>
 // import { zhCn } from 'element-plus/lib/locale';
-import { reactive,toRefs,onBeforeMount } from 'vue';
+import { reactive,toRefs,onBeforeMount, pushScopeId } from 'vue';
 import { GetTabList,ChangeStatus,NewsDelete } from '@a/info';
 import { getDate } from "@a/common";
 import dayjs from 'dayjs';
 import { categoryHook } from '../hook/infoHook';
+import router from '@/router';
+import BasisTable from '@c/table';
 export default{
+    name:'infoIndex',
+    components:{BasisTable},
     setup(){
         onBeforeMount(()=>{
             handleGetList()
             getList()
+        })
+        //表头数据
+        const table_config = reactive({
+            //表头以及数据绑定标签名
+            table_header:[
+                {label:"标题",prop:"title"},
+                {label:"类别",prop:"category_name"},
+                {label:"日期",prop:"create_date"},
+                {label:"发布状态",prop:"status"},
+            ],
+            //自定义配置
+            config:{
+                selection:false,
+                page:true,
+                batch_delete:true
+            },
+            request:{
+                url: "/news/getList/",
+                data:{
+                    pageNumber:1,
+                    pageSize:10
+                }
+            }
         })
         const data = reactive({
             category:2,
@@ -126,6 +139,7 @@ export default{
 
             ]
         })
+        // let locale zhCn
         const {infoData,handGetCategory:getList} = categoryHook()//:取别名
         
         const request_data = reactive({
@@ -221,9 +235,16 @@ export default{
                 data.row_data_id = ''
             }
         }
+        const handleDetailed=(id)=>{
+            router.push({
+                path:"/newsDetailed",
+                query:{id}
+            })
+        }
         // let locale =zhCn
         return {...toRefs(data),handleSelectionChange,formDate,request_data,infoData,
-            handleSizeChange,handleCurrentChange,changeStatus,handleDeleteConfirm,handleGetList
+            handleSizeChange,handleCurrentChange,changeStatus,
+            handleDeleteConfirm,handleGetList,handleDetailed,table_config
         }
     }
 }
