@@ -21,7 +21,7 @@ export function requesthook(){
         }
         TableData(request_data).then(response=>{
             table_data.data = response.data.data
-            table_data.total = request.data.total
+            table_data.total = response.data.total
         })
     }
     const requestData = (data={}) => {
