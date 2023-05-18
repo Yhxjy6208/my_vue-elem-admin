@@ -106,11 +106,10 @@ export default{
             //自定义配置
             config:{
                 selection:false,
-                page:true,
-                batch_delete:true
             },
             request:{
-                url: "/news/getList/",
+                url:"info",
+                // url: "/news/getList/",
                 data:{
                     pageNumber:1,
                     pageSize:10
@@ -241,6 +240,9 @@ export default{
                 query:{id}
             })
         }
+        // const handonload = (data)=>{
+        //     console.log("zz",data)
+        // }
         // let locale =zhCn
         return {...toRefs(data),handleSelectionChange,formDate,request_data,infoData,
             handleSizeChange,handleCurrentChange,changeStatus,

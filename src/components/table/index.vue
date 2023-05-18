@@ -39,6 +39,7 @@ import { reactive } from 'vue';
 import { configHook } from './configHook';
 import { requesthook } from './requestHook';
     export default{
+        emits:["onload"],
         name:'TableComponents',
         components:{},
         props:{
@@ -55,8 +56,11 @@ import { requesthook } from './requestHook';
                 default:()=>({})
             }
         },
-        setup(props){
+        setup(props,{emit}){
             const data = reactive({
+                table_data:[{
+                    title:"zz"
+                }],
                 render_header:props.coulums,
                 row_data_id:[],
                 currentPage:0,
@@ -65,7 +69,10 @@ import { requesthook } from './requestHook';
             const {config,configInit} = configHook()
             const {requestData,table_data} = requesthook()
             configInit(props.config)
-            requestData(props.request)
+            // requestData(props.request)
+            requestData(props.request).then(reaponse=>{
+                emit("onload",table_data)
+            })
             return{
                 data,config,table_data
             }
