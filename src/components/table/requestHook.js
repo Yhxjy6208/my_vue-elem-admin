@@ -37,9 +37,13 @@ export function requesthook(){
         })
         
     }
-    const requestData = (data={}) => {
-        request_config = {...request_config,...data}
-        console.log(data)
+    const requestData = (data={},type="init") => {
+        if(type==="init"){
+            request_config = {...request_config,...data}
+        }
+        if(type==="page"){
+            request_config = {...request_config,data,...data}
+        }
         return loadData()
     }
     return { requestData,table_data }

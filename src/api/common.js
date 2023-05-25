@@ -32,6 +32,14 @@ export function TableData(data={}) {
     })
 }
 
+export function SwitchSatus(data={}) {
+    return service.request({
+        method: data.method,
+        url: data.url,
+        data:data.data
+    })
+}
+
 export function getDate(params){
     const new_date = params.value?new Date(params.value):new Date()
     //获取数据

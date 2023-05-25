@@ -36,8 +36,10 @@ declare module '@vue/runtime-core' {
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     Index: typeof import('./src/components/svgIcon/Index.vue')['default']
     Main: typeof import('./src/components/Main.vue')['default']
+    Pagination: typeof import('./src/components/pagination/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Switch: typeof import('./src/components/switch/index.vue')['default']
     Table: typeof import('./src/components/table/index.vue')['default']
   }
 }
