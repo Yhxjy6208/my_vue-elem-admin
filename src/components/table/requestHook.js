@@ -1,6 +1,8 @@
 import { reactive } from "vue";
 import { TableData } from "@a/common";
 import ApiUrl from "@/api/requestUrl";
+import { ElLoading } from  "element-plus";
+import "element-plus/lib/components/loading/style/css";
 export function requesthook(){
     let request_config = reactive({
         has:true,//是否请求
@@ -10,9 +12,15 @@ export function requesthook(){
     })
     const table_data = reactive({
         data:[],
-        total:0
+        total:0,
+        loading:false
+    })
+    const loadingServer = ElLoading.service({
+        lock:table_data.loading,
+        text:"加载中,请稍后"
     })
     const loadData = ()=>{
+        table_data.loading = true
         if (!request_config.has){return false}
         if (!request_config.url){return false}
         //参数
@@ -32,8 +40,14 @@ export function requesthook(){
             TableData(request_data).then(response=>{
                 table_data.data = response.data.data
                 table_data.total = response.data.total
+                table_data.loading = false
+                loadingServer.close()
                 resolve(table_data.data)
+            }).catch(error=>{
+                table_data.loading = false
             })
+                
+    
         })
         
     }

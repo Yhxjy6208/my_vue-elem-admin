@@ -1,20 +1,30 @@
 <template>
     <div>
-        <el-table :data="table_data.data" border style="width: 100%;">
+        <!-- v-loading="table_data.loading" element-loading-text="加载中,请稍后" -->
+        <el-table 
+        :data="table_data.data" border style="width: 100%;">
             <el-table-column type="selection" width="40" v-if="config.selection"/>
             <!-- <el-table-column v-for="header in data.render_header"
             :key="header.prop"
             :prop="header.prop"
             :label="header.label"> -->
             <template v-for="header in data.render_header" :key="header.prop">
-                <el-table-column v-if="header.type==='switch'"  label="发布状态">
+                <el-table-column v-if="header.type==='switch'"  label="发布状态" :width="header.width">
                     <template #default="scope">
                         <!-- <el-switch v-model="scope.row[header.prop]" @change="changeStatus($event,scope.row)"
                         :loading="scope.row.loading"></el-switch> -->
                         <Switch :data="scope.row" :config="header"></Switch>
                     </template>
                 </el-table-column>
-                <el-table-column v-else-if="header.type==='function'" :label="header.label">
+                <el-table-column v-else-if="header.type==='slot'" :label="header.label">
+                    <template #default="scope">
+                        <slot :name="header.sloat_name" :data="scope.row"></slot>
+                        <el-button v-if="header.delete_elem"  size="small" 
+                            @click="handleDeleteConfirm(sloat_data.data.id)">删除
+                        </el-button>
+                    </template>
+                </el-table-column>
+                <el-table-column v-else-if="header.type==='function'" :label="header.label" :width="header.width">
                     <template #default="scope">
                         <div v-html="header.callback && header.callback(scope.row)"></div>
                     </template>
@@ -22,6 +32,7 @@
                 <el-table-column v-else 
                 :prop="header.prop"
                 :label="header.label"
+                :width="header.width"
                 ></el-table-column>
                 
             </template>
@@ -31,6 +42,8 @@
                 <el-table-column prop="adress" label="地址"></el-table-column> -->
             <!-- </el-table-column> -->
         </el-table>
+        <!-- 匿名插槽（default）当组件中有内容时会替换原有插槽内容-->
+        <!-- <slot name="default"></slot> -->
         <el-row class="margin-top-30" >
             <el-col :span="6" >
                 <el-button class="pull-left" :disabled="!row_data_id"
