@@ -20,7 +20,7 @@
                     <template #default="scope">
                         <slot :name="header.sloat_name" :data="scope.row"></slot>
                         <el-button v-if="header.delete_elem"  size="small" 
-                            @click="handleDeleteConfirm('delete',scope.row.id)">删除
+                            @click="handDelete('delete',scope.row.id)">删除
                         </el-button>
                     </template>
                 </el-table-column>
@@ -123,7 +123,7 @@ import Switch from '@c/switch';
                 emit("onload",table_data)
                 })
             }
-            const hanDelete = (type,val)=>{
+            const handDelete = (type,val)=>{
                 if(type==='delete'){save_Date_Id(val)}
                 handleDeleteConfirm()
             }
@@ -131,7 +131,7 @@ import Switch from '@c/switch';
                 save_Date_Id(val)
             }
             return{
-                data,config,table_data,getList,hanDelete,handleCurrentChange
+                data,config,table_data,getList,handDelete,handleCurrentChange
             }
         }
     }
