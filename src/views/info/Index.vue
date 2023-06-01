@@ -37,6 +37,9 @@
     :config="table_config.config"
     :request = "table_config.request"
     >
+    <!-- <template v-slot:operation="sloat_data">
+        <p>{{ sloat_data }}</p>
+    </template> -->
     <template v-slot:operation="sloat_data">
         <el-button type="danger" size="small" 
             @click="handleDetailed(sloat_data.data.id)">编辑
@@ -264,6 +267,7 @@ export default{
             }else{
                 data.row_data_id = ''
             }
+            data.row_data_id = val && val.length >0 ?val.map(item=>item.id).join : ""
         }
         const handleDetailed=(id)=>{
             router.push({

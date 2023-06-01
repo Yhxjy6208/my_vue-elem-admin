@@ -1,7 +1,7 @@
 <template>
     <div>
         <!-- v-loading="table_data.loading" element-loading-text="加载中,请稍后" -->
-        <el-table 
+        <el-table  @selection-change = "handleCurrentChange"
         :data="table_data.data" border style="width: 100%;">
             <el-table-column type="selection" width="40" v-if="config.selection"/>
             <!-- <el-table-column v-for="header in data.render_header"
@@ -20,7 +20,7 @@
                     <template #default="scope">
                         <slot :name="header.sloat_name" :data="scope.row"></slot>
                         <el-button v-if="header.delete_elem"  size="small" 
-                            @click="handleDeleteConfirm(sloat_data.data.id)">删除
+                            @click="handleDeleteConfirm('delete',scope.row.id)">删除
                         </el-button>
                     </template>
                 </el-table-column>
@@ -46,8 +46,8 @@
         <!-- <slot name="default"></slot> -->
         <el-row class="margin-top-30" >
             <el-col :span="6" >
-                <el-button class="pull-left" :disabled="!row_data_id"
-                @click="handleDeleteConfirm(row_data_id)" v-if="config.batch_delete"
+                <el-button class="pull-left" :disabled="!table_data.data_id"
+                @click="handDelete('batch')" v-if="config.batch_delete"
                 >批量删除</el-button>
             </el-col>
             <el-col :span="18" >
@@ -97,6 +97,10 @@ import Switch from '@c/switch';
             }
         },
         setup(props,{emit}){
+            onBeforeMount(()=>{
+                configInit(props.config)
+                // getList(props.request)请求数据
+            })
             const data = reactive({
                 table_data:[{
                     title:"zz"
@@ -107,23 +111,27 @@ import Switch from '@c/switch';
                 total:0,
             })
             const {config,configInit} = configHook()
-            const {requestData,table_data} = requesthook()
+            const {requestData,table_data,handleDeleteConfirm,save_Date_Id} = requesthook()
             // configInit(props.config)
             // requestData(props.request)
             requestData(props.request).then(reaponse=>{
                 emit("onload",table_data)
             })
-            onBeforeMount(()=>{
-                configInit(props.config)
-                // getList(props.request)请求数据
-            })
+
             const getList = (params,type)=>{
                 requestData(params,type).then(reaponse=>{
                 emit("onload",table_data)
-            })
+                })
+            }
+            const hanDelete = (type,val)=>{
+                if(type==='delete'){save_Date_Id(val)}
+                handleDeleteConfirm()
+            }
+            const handleCurrentChange = (val)=>{
+                save_Date_Id(val)
             }
             return{
-                data,config,table_data,getList
+                data,config,table_data,getList,hanDelete,handleCurrentChange
             }
         }
     }

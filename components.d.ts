@@ -33,7 +33,6 @@ declare module '@vue/runtime-core' {
     Header: typeof import('./src/components/Header.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
     Index: typeof import('./src/components/svgIcon/Index.vue')['default']
-    Loading: typeof import('element-plus/es')['ElLoadingDirective']
     Main: typeof import('./src/components/Main.vue')['default']
     Pagination: typeof import('./src/components/pagination/index.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

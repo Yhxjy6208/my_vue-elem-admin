@@ -3,6 +3,7 @@ import { TableData } from "@a/common";
 import ApiUrl from "@/api/requestUrl";
 import { ElLoading } from  "element-plus";
 import "element-plus/lib/components/loading/style/css";
+import { NewsDelete } from '@a/info';
 export function requesthook(){
     let request_config = reactive({
         has:true,//是否请求
@@ -13,8 +14,50 @@ export function requesthook(){
     const table_data = reactive({
         data:[],
         total:0,
-        loading:false
+        loading:false,
+        data_id:""
     })
+    //删除新闻
+    const handleDeleteConfirm = ()=>{
+        ElMessageBox.confirm('确定删除该分类吗? 删除后将无法恢复','提示',{
+                confirmButtonText:'确定',
+                cancelButtonText:'取消',
+                type:'warning',
+                showClose:false,//右上角的关闭
+                closeOnClickModal:false,//无法点击屏幕取消操作
+                closeOnPressEscape:false, //无法按esc取消操作
+                beforeClose:(action,instance,done)=>{
+                    if(action==='confirm'){
+                        instance.confirmButtonLoading = true
+                        NewsDelete({id:table_data.data_id}).then(response=>{
+                            ElMessage.success(response.message)
+                            table_data.data_id = ''
+                            instance.confirmButtonLoading = false
+                            loadData()
+                            done()
+                        }).catch(error=>{
+                            instance.confirmButtonLoading = false
+                            done()
+                        })
+                    }else{
+                        done()
+                    }
+                }
+            })
+    }
+    const save_Date_Id = (value)=>{
+        const isArray = Array.isArray(value)
+        if (!isArray){
+            table_data.data_id = value
+        }else{
+            table_data.data_id = value.length > 0 ?value.map(item=>item.id).join() : ""
+        }
+    }
+    // const hanDelete = ()=>{
+    //     NewsDelete({id:table_data.data_id}).then(response=>{
+    //         ElMessage.success(response.message)
+    //     })
+    // }
     const loadingServer = ElLoading.service({
         lock:table_data.loading,
         text:"加载中,请稍后"
@@ -27,7 +70,6 @@ export function requesthook(){
         const url = ApiUrl[request_config.url]?.list?.url
         const method = ApiUrl[request_config.url].list?.method || "post"
         const data = request_config.data
-        console.log("url",url)
         const request_data = {
             // url:request_config.url,
             // method:request_config.method,
@@ -60,5 +102,5 @@ export function requesthook(){
         }
         return loadData()
     }
-    return { requestData,table_data }
+    return { requestData,table_data,handleDeleteConfirm,save_Date_Id }
 }
